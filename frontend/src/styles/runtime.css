@@ -1,0 +1,212 @@
+/* ═════════════ Respondent player + builder canvas (shared "tf-" design tokens) ═════════════
+   Everything is sized in `em`, so the same markup renders full-size in the player and
+   scaled-down inside the builder canvas (they only differ in .tf-root's font-size).        */
+
+.tf-root {
+  --tf-bg: #fff; --tf-q: #262627; --tf-a: #0445AF; --tf-btn: #0445AF; --tf-btn-text: #fff;
+  --tf-font: 'Karla', system-ui, sans-serif;
+  --tf-a-10: color-mix(in srgb, var(--tf-a) 10%, transparent);
+  --tf-a-20: color-mix(in srgb, var(--tf-a) 20%, transparent);
+  --tf-a-30: color-mix(in srgb, var(--tf-a) 30%, transparent);
+  --tf-a-60: color-mix(in srgb, var(--tf-a) 60%, transparent);
+  --tf-q-70: color-mix(in srgb, var(--tf-q) 70%, transparent);
+  --tf-q-50: color-mix(in srgb, var(--tf-q) 50%, transparent);
+  --tf-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --tf-shift: clamp(56px, 14vh, 140px);
+  --tf-overlay: 0; --tf-bg-image: none;
+  background-color: var(--tf-bg);
+  /* optional picture (+ darkening overlay) behind everything, set per theme */
+  background-image: linear-gradient(rgba(0, 0, 0, var(--tf-overlay)), rgba(0, 0, 0, var(--tf-overlay))), var(--tf-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: var(--tf-q);
+  font-family: var(--tf-font);
+  font-size: 16px;
+  line-height: 1.3;
+  position: relative;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.tf-root *, .tf-root *::before, .tf-root *::after { box-sizing: border-box; }
+.tf-root button { font-family: inherit; }
+
+.tf-player { position: fixed; inset: 0; z-index: 50; }
+.tf-player.inline { position: absolute; }
+
+/* ───────── progress bar (top) ───────── */
+.tf-progress { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--tf-a-10); z-index: 5; }
+.tf-progress > i { display: block; height: 100%; width: 0; background: var(--tf-a); transition: width 0.3s ease-out; border-radius: 0 2px 2px 0; }
+
+/* ───────── screens + transitions ───────── */
+.tf-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 72px 24px 88px; overflow-y: auto; will-change: transform, opacity; }
+.tf-screen.leaving { pointer-events: none; }
+.tf-screen-inner { width: 100%; max-width: 720px; margin: auto 0; }
+
+.tf-screen.enter-forward  { animation: tf-in-up   0.6s var(--tf-ease) 0.08s both; }
+.tf-screen.exit-forward   { animation: tf-out-up  0.38s cubic-bezier(0.4, 0, 1, 1) both; }
+.tf-screen.enter-backward { animation: tf-in-down 0.6s var(--tf-ease) 0.08s both; }
+.tf-screen.exit-backward  { animation: tf-out-down 0.38s cubic-bezier(0.4, 0, 1, 1) both; }
+@keyframes tf-in-up    { from { opacity: 0; transform: translateY(var(--tf-shift)); }  to { opacity: 1; transform: none; } }
+@keyframes tf-in-down  { from { opacity: 0; transform: translateY(calc(var(--tf-shift) * -1)); } to { opacity: 1; transform: none; } }
+@keyframes tf-out-up   { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(calc(var(--tf-shift) * -1)); } }
+@keyframes tf-out-down { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(var(--tf-shift)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-screen, .tf-progress > i, .tf-field.shake { animation: none !important; transition: none !important; }
+}
+
+/* ───────── question typography ───────── */
+.tf-head { display: flex; align-items: baseline; gap: 0.5em; }
+.tf-num { display: inline-flex; align-items: center; gap: 0.2em; color: var(--tf-a); font-size: 1.15em; white-space: nowrap; flex: none; }
+.tf-num svg { width: 0.9em; height: 0.9em; }
+.tf-title { font-size: 1.5em; font-weight: 400; line-height: 1.3; margin: 0; word-break: break-word; white-space: pre-wrap; }
+.tf-title .req { color: var(--tf-a); margin-left: 0.15em; }
+.tf-desc { font-size: 1.1em; line-height: 1.35; margin: 0.35em 0 0; color: var(--tf-q-70); white-space: pre-wrap; word-break: break-word; }
+.tf-body { margin-top: 1.5em; }
+.tf-body.with-num { margin-left: 0; }
+
+/* ───────── text-like inputs (underlined, like the original) ───────── */
+.tf-field { position: relative; }
+.tf-field.shake { animation: tf-shake 0.4s ease-in-out; }
+@keyframes tf-shake { 0%,100% { transform: none; } 20% { transform: translateX(-10px); } 40% { transform: translateX(9px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+
+.tf-input, .tf-textarea {
+  display: block; width: 100%; background: transparent; border: 0; border-radius: 0;
+  border-bottom: 1px solid var(--tf-a-30);
+  color: var(--tf-a); font: inherit; font-size: 1.875em; line-height: 1.25;
+  padding: 0.12em 0 0.18em; outline: none; caret-color: var(--tf-a);
+  box-shadow: 0 1px 0 0 transparent; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.tf-input::placeholder, .tf-textarea::placeholder { color: var(--tf-a-30); opacity: 1; }
+.tf-input:focus, .tf-textarea:focus { border-bottom-color: var(--tf-a); box-shadow: 0 1px 0 0 var(--tf-a); }
+.tf-textarea { resize: none; min-height: 3.2em; }
+.tf-fake { display: block; width: 100%; border-bottom: 1px solid var(--tf-a-30); color: var(--tf-a-30); font-size: 1.875em; padding: 0.12em 0 0.18em; line-height: 1.25; user-select: none; }
+
+/* ───────── choices ───────── */
+.tf-choices { display: flex; flex-direction: column; gap: 0.5em; max-width: 24em; }
+.tf-choice {
+  display: flex; align-items: center; gap: 0.6em; width: 100%; text-align: left; cursor: pointer;
+  min-height: 2.5em; padding: 0.3em 0.7em 0.3em 0.45em; border-radius: 4px;
+  background: var(--tf-a-10); color: var(--tf-a); font-size: 1.25em; line-height: 1.2;
+  border: 1px solid var(--tf-a-60); box-shadow: 0 0 0 0 transparent;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+.tf-choice:hover { background: var(--tf-a-20); }
+.tf-choice:focus-visible { outline: 2px solid var(--tf-a); outline-offset: 2px; }
+.tf-choice:active { transform: scale(0.985); }
+.tf-choice.selected { background: var(--tf-a-20); box-shadow: 0 0 0 1px var(--tf-a); border-color: var(--tf-a); }
+.tf-key {
+  flex: none; display: inline-grid; place-items: center; width: 1.45em; height: 1.45em; border-radius: 3px;
+  border: 1px solid var(--tf-a-60); background: var(--tf-bg); font-size: 0.64em; font-weight: 700; text-transform: uppercase;
+}
+.tf-choice.selected .tf-key { background: var(--tf-a); color: var(--tf-bg); border-color: var(--tf-a); }
+.tf-choice .lbl { flex: 1; word-break: break-word; }
+.tf-choice .tick { width: 1em; height: 1em; opacity: 0; flex: none; }
+.tf-choice.selected .tick { opacity: 1; }
+.tf-choices.compact { max-width: 15em; }
+
+/* ───────── dropdown ───────── */
+.tf-dd { position: relative; max-width: 28em; }
+.tf-dd .tf-input { font-size: 1.5em; padding-right: 1.6em; }
+.tf-dd .chev { position: absolute; right: 0; top: 0.55em; width: 1.2em; height: 1.2em; color: var(--tf-a); pointer-events: none; transition: transform 0.2s; }
+.tf-dd.open .chev { transform: rotate(180deg); }
+.tf-dd-list {
+  list-style: none; margin: 0.3em 0 0; padding: 0.3em; max-height: 15em; overflow-y: auto;
+  border: 1px solid var(--tf-a-30); border-radius: 6px; background: var(--tf-bg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); position: relative; z-index: 3;
+}
+.tf-dd-list li { padding: 0.5em 0.7em; border-radius: 4px; font-size: 1.15em; color: var(--tf-a); cursor: pointer; }
+.tf-dd-list li.hi, .tf-dd-list li:hover { background: var(--tf-a-10); }
+.tf-dd-list li.sel { font-weight: 700; }
+.tf-dd-list li.empty { color: var(--tf-q-50); cursor: default; }
+
+/* ───────── rating ───────── */
+.tf-rating { display: flex; flex-wrap: wrap; gap: 0.3em; }
+.tf-rate {
+  position: relative; display: grid; place-items: center; width: 2.4em; height: 2.4em; background: transparent; border: 0; cursor: pointer;
+  color: var(--tf-a); border-radius: 6px; padding: 0; transition: transform 0.12s;
+}
+.tf-rate:hover { transform: scale(1.12); }
+.tf-rate:focus-visible { outline: 2px solid var(--tf-a); outline-offset: 2px; }
+.tf-rate svg { width: 2em; height: 2em; stroke: var(--tf-a); stroke-width: 1.6; fill: transparent; transition: fill 0.15s; }
+.tf-rate.on svg { fill: var(--tf-a); }
+.tf-rate .n { position: absolute; bottom: -1.1em; font-size: 0.7em; color: var(--tf-q-70); }
+.tf-rating.numbers .tf-rate { width: 2.6em; height: 2.6em; border: 1px solid var(--tf-a-60); background: var(--tf-a-10); font-size: 1.15em; font-weight: 700; }
+.tf-rating.numbers .tf-rate.on { background: var(--tf-a); color: var(--tf-bg); }
+.tf-rating.numbers .tf-rate:hover { background: var(--tf-a-20); }
+.tf-rating.numbers .tf-rate.on:hover { background: var(--tf-a); }
+.tf-rating-wrap { padding-bottom: 1.3em; }
+
+/* ───────── buttons / hints / errors ───────── */
+.tf-actions { display: flex; align-items: center; gap: 0.9em; margin-top: 1.4em; flex-wrap: wrap; }
+.tf-btn {
+  display: inline-flex; align-items: center; gap: 0.35em; cursor: pointer; border: 0; border-radius: 4px;
+  background: var(--tf-btn); color: var(--tf-btn-text); font-size: 1.25em; font-weight: 700; line-height: 1;
+  padding: 0.5em 0.95em; text-decoration: none; transition: filter 0.15s, transform 0.1s;
+}
+.tf-btn:hover { filter: brightness(1.12); }
+.tf-btn:active { transform: scale(0.97); }
+.tf-btn:focus-visible { outline: 2px solid var(--tf-q); outline-offset: 2px; }
+.tf-btn:disabled { opacity: 0.6; cursor: progress; }
+.tf-btn svg { width: 1.05em; height: 1.05em; }
+.tf-btn.big { font-size: 1.4em; padding: 0.55em 1.1em; }
+.tf-hint { font-size: 0.8em; color: var(--tf-q-70); display: inline-flex; align-items: center; gap: 0.4em; }
+.tf-hint b { font-weight: 700; }
+.tf-error {
+  display: inline-flex; align-items: center; gap: 0.45em; margin-top: 0.9em; padding: 0.4em 0.75em; border-radius: 4px;
+  background: #FDECEC; color: #B3261E; font-size: 1em; font-weight: 700; animation: tf-pop 0.25s var(--tf-ease);
+}
+.tf-error svg { width: 1em; height: 1em; flex: none; }
+@keyframes tf-pop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* ───────── welcome / ending ───────── */
+.tf-welcome .tf-title, .tf-ending .tf-title { font-size: 2.1em; font-weight: 400; }
+.tf-welcome .tf-desc, .tf-ending .tf-desc { font-size: 1.35em; margin-top: 0.5em; }
+.tf-welcome .tf-actions, .tf-ending .tf-actions { margin-top: 1.8em; }
+
+/* ───────── bottom nav ───────── */
+.tf-nav { position: absolute; right: 24px; bottom: 22px; display: flex; z-index: 6; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+.tf-nav button { width: 38px; height: 34px; display: grid; place-items: center; background: var(--tf-btn); color: var(--tf-btn-text); border: 0; cursor: pointer; transition: filter 0.15s; }
+.tf-nav button + button { border-left: 1px solid color-mix(in srgb, var(--tf-btn-text) 25%, transparent); }
+.tf-nav button:hover:not(:disabled) { filter: brightness(1.15); }
+.tf-nav button:disabled { opacity: 0.45; cursor: default; }
+.tf-nav svg { width: 18px; height: 18px; }
+.tf-badge { position: absolute; left: 24px; bottom: 22px; z-index: 6; font-size: 12px; color: var(--tf-q-70); display: flex; align-items: center; gap: 6px; }
+.tf-badge b { color: var(--tf-q); }
+.tf-close { position: absolute; top: 14px; right: 16px; z-index: 8; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.55); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.tf-close:hover { background: rgba(0,0,0,0.75); }
+.tf-previewbar { position: absolute; top: 4px; left: 0; right: 0; z-index: 7; text-align: center; font-size: 12px; font-weight: 700; padding: 5px 48px; background: #FFF4CC; color: #6B5400; }
+
+.tf-loading { display: grid; place-items: center; min-height: 100vh; background: #fff; color: #666; font-family: 'Karla', sans-serif; }
+.tf-spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid #ddd; border-top-color: #333; animation: tf-spin 0.8s linear infinite; }
+@keyframes tf-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  .tf-root { font-size: 14px; }
+  .tf-screen { padding: 64px 20px 84px; align-items: flex-start; }
+  .tf-input, .tf-textarea { font-size: 1.55em; }
+  .tf-nav { right: 14px; bottom: 14px; }
+  .tf-badge { left: 14px; bottom: 18px; }
+}
+@media (min-width: 1100px) { .tf-player .tf-root, .tf-player.tf-root { font-size: 17px; } }
+
+/* ───────── file upload answer ───────── */
+.tf-file { width: 100%; max-width: 30em; }
+.tf-drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35em; width: 100%; padding: 1.5em 1em; border: 2px dashed var(--tf-a-60); border-radius: 8px; background: var(--tf-a-10); color: var(--tf-a); cursor: pointer; font-size: 1em; text-align: center; transition: background 0.2s, border-color 0.2s; }
+.tf-drop:hover, .tf-drop.over { background: var(--tf-a-20); border-color: var(--tf-a); }
+.tf-drop svg { width: 1.6em; height: 1.6em; }
+.tf-drop b { font-weight: 700; }
+.tf-drop small { color: var(--tf-q-70); font-size: 0.78em; }
+.tf-drop:disabled { opacity: 0.6; cursor: default; }
+.tf-filecard { display: flex; align-items: center; gap: 0.7em; padding: 0.75em 0.9em; border: 1px solid var(--tf-a-60); border-radius: 8px; background: var(--tf-a-10); }
+.tf-filecard > svg { width: 1.4em; height: 1.4em; flex: none; color: var(--tf-a); }
+.tf-filecard .meta { min-width: 0; flex: 1; }
+.tf-filecard .name { display: block; font-weight: 700; color: var(--tf-q); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-filecard .size { font-size: 0.8em; color: var(--tf-q-70); }
+.tf-filecard .x { display: grid; place-items: center; width: 1.9em; height: 1.9em; border: 0; border-radius: 50%; background: transparent; color: var(--tf-q-70); cursor: pointer; }
+.tf-filecard .x:hover { background: var(--tf-a-20); color: var(--tf-q); }
+.tf-filecard .x svg { width: 1.1em; height: 1.1em; }
+.tf-filebar { height: 4px; margin-top: 0.4em; border-radius: 2px; background: var(--tf-a-20); overflow: hidden; }
+.tf-filebar i { display: block; height: 100%; background: var(--tf-a); transition: width 0.15s linear; }
+.tf-file-error { margin-top: 0.5em; font-size: 0.85em; color: #c4261d; }

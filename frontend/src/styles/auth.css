@@ -1,0 +1,50 @@
+/* ───────── login / sign-up ───────── */
+.auth { min-height: 100vh; display: grid; grid-template-columns: minmax(360px, 1fr) minmax(0, 1.15fr); background: var(--surface); }
+.auth-left { display: flex; flex-direction: column; padding: 28px 40px 40px; }
+.auth-card { width: 100%; max-width: 380px; margin: auto; padding: 24px 0; }
+.auth-card h1 { font-size: 28px; letter-spacing: -0.02em; margin-bottom: 6px; }
+.auth-card > .muted { margin: 0 0 22px; font-size: 15px; }
+.auth-card .field { margin-bottom: 16px; }
+.auth-card .input { height: 42px; font-size: 15px; }
+.auth-card .field.has-error .input { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(196, 38, 29, 0.1); }
+.field-error { font-size: 12.5px; color: var(--danger); font-weight: 500; animation: shake 0.3s; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.pw-wrap { position: relative; }
+.pw-wrap .input { padding-right: 42px; }
+.pw-wrap .icon-btn { position: absolute; right: 5px; top: 5px; }
+.auth-alert { margin-bottom: 16px; padding: 10px 12px; border-radius: var(--radius); background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger-ink); font-weight: 500; }
+.auth-submit { width: 100%; margin-top: 4px; }
+.auth-switch { margin: 18px 0 0; text-align: center; color: var(--muted); }
+.auth-switch a { color: var(--ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* decorative right-hand panel (mock of the respondent screen) */
+.auth-right { position: relative; display: grid; place-items: center; padding: 40px; overflow: hidden; background: linear-gradient(135deg, #f2e9de 0%, #e3d3c0 100%); }
+.auth-right::before { content: ''; position: absolute; width: 520px; height: 520px; border-radius: 50%; right: -160px; top: -160px; background: rgba(255, 255, 255, 0.35); }
+.auth-right::after { content: ''; position: absolute; width: 360px; height: 360px; border-radius: 50%; left: -120px; bottom: -120px; background: rgba(4, 69, 175, 0.1); }
+.auth-right .mock { position: relative; z-index: 1; width: min(440px, 100%); padding: 36px; background: #fff; border-radius: 12px; box-shadow: 0 24px 60px rgba(60, 40, 10, 0.18); font-family: 'Karla', var(--ui-font); animation: rise 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.1s backwards; }
+.auth-right .mock small { color: #0445af; font-weight: 700; font-size: 15px; }
+.auth-right .mock h2 { font-size: 26px; font-weight: 400; margin: 8px 0 20px; line-height: 1.25; }
+.mock-opts { display: grid; gap: 8px; }
+.mock-opts span { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid rgba(4, 69, 175, 0.5); border-radius: 4px; background: rgba(4, 69, 175, 0.06); color: #0445af; font-size: 17px; }
+.mock-opts kbd { display: inline-grid; place-items: center; width: 22px; height: 22px; border: 1px solid #0445af; border-radius: 3px; font: 600 12px 'Karla', sans-serif; background: #fff; }
+.mock-opts span:nth-child(2) { background: #0445af; color: #fff; }
+.mock-opts span:nth-child(2) kbd { background: #fff; color: #0445af; }
+.mock-btn { display: inline-block; margin-top: 20px; padding: 9px 18px; border-radius: 4px; background: #0445af; color: #fff; font-weight: 700; font-size: 17px; }
+
+@media (max-width: 860px) {
+  .auth { grid-template-columns: 1fr; }
+  .auth-right { display: none; }
+  .auth-left { padding: 20px 20px 32px; }
+}
+
+/* ───────── account menu (workspace header) ───────── */
+.user-menu { position: relative; }
+.user-menu .avatar { border: 0; cursor: pointer; font-family: inherit; transition: box-shadow 0.15s; }
+.user-menu .avatar:hover, .user-menu .avatar[aria-expanded='true'] { box-shadow: 0 0 0 3px rgba(25, 25, 25, 0.15); }
+.user-pop { position: absolute; right: 0; top: 40px; z-index: 50; min-width: 230px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow-lg); animation: rise 0.15s ease-out; }
+.user-pop .who { display: flex; flex-direction: column; padding: 8px 10px 10px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.user-pop .who b { font-weight: 600; }
+.user-pop .who span { color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; }
+.user-pop button { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 0; background: transparent; border-radius: 6px; cursor: pointer; text-align: left; }
+.user-pop button:hover { background: var(--bg-soft); }
+.auth-top { display: flex; align-items: center; justify-content: space-between; }
